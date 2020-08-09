@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/adityasidharta/gombal/internal"
 	"github.com/mroth/weightedrand"
 	"math/rand"
 	"time"
@@ -202,7 +201,7 @@ func (bot *Bot) Add(q string, r string) {
 
 // Adds appends multiple phrases (queries, responses) into the ChatBot Database
 func (bot *Bot) Adds(qs []string, rs []string) error {
-	tuples, err := internal.Zip(qs, rs)
+	tuples, err := Zip(qs, rs)
 	if err != nil {
 		return err
 	}
@@ -249,7 +248,7 @@ func (bot *Bot) RemoveResponse(q string, r string) error {
 
 // RemoveResponses delete responses from the respective queries from the DataBase
 func (bot *Bot) RemoveResponses(qs []string, rs []string) error {
-	tuples, err := internal.Zip(qs, rs)
+	tuples, err := Zip(qs, rs)
 	if err != nil {
 		return err
 	}
