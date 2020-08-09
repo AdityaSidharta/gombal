@@ -6,6 +6,7 @@ type Tuple struct {
     Q, R string
 }
 
+// Zip combines two slices of string into a slice of Tuple
 func Zip(as []string, bs []string) ([]Tuple, error) {
 	n := len(as)
 

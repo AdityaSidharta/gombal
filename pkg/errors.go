@@ -4,6 +4,7 @@ type GombalErrors struct {
 	message string
 }
 
+// Error returns the error message related to the Gombal Package
 func (e *GombalErrors) Error() string {
 	return e.message
 }

@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// Bot Constants
 const (
 	debugMessage = "Papa tell me your secret"
 	fullDebugMessage = "Mama tell me your secret"
@@ -16,15 +17,22 @@ const (
 	MAXIMUM = 2
 )
 
+// query is the data structure for the Chat query
 type query string
+
+// response is the data structure for the Chat response. It includes the possible responses and the weight of the responses
 type response map[string]int
+
+// dataset is the data structure that unifies the learned queries and responses
 type dataset map[query]response
 
+// Bot is the data structure of the ChatBot.
 type Bot struct {
 	ds       dataset
 	strategy int
 }
 
+// NewBot creates New Bot with empty learned phrases and chosen strategy
 func NewBot (strategy int) *Bot {
 	initQuery := "Hi There!"
 	initResponse := make(map[string]int)
@@ -39,6 +47,7 @@ func NewBot (strategy int) *Bot {
 	}
 }
 
+// getMaximum chooses the response with the highest weight, given multiple responses
 func (bot *Bot) getMaximum(response map[string]int) (string, error) {
 	if len(response) == 0 {
 		return "", emptyResponseError
@@ -56,6 +65,7 @@ func (bot *Bot) getMaximum(response map[string]int) (string, error) {
 	return maxVal, nil
 }
 
+// getWeighted chooses the response randomly according to its weights, given multiple responses
 func (bot *Bot) getWeighted(response map[string]int) (string, error) {
 	rand.Seed(time.Now().UTC().UnixNano())
 
@@ -77,7 +87,7 @@ func (bot *Bot) getWeighted(response map[string]int) (string, error) {
     return result, nil
 }
 
-
+// getRandom chooses one response randomly, given multiple responses
 func (bot *Bot) getRandom(response map[string]int) (string, error) {
 	rand.Seed(time.Now().UTC().UnixNano())
 
@@ -100,11 +110,13 @@ func (bot *Bot) getRandom(response map[string]int) (string, error) {
 }
 
 
+// contains check whether the query exists within the dataset
 func (bot *Bot) contains(q string) bool {
 	_, ok := bot.ds[query(q)]
 	return ok
 }
 
+// Debug displays the learned queries and possible responses in a nice format
 func (bot *Bot) Debug() string {
 	result := ""
 	for q, rDict := range bot.ds {
@@ -116,6 +128,7 @@ func (bot *Bot) Debug() string {
 	return result
 }
 
+// FullDebug displays the learned queries, possible responses and its weights in a nice format
 func (bot *Bot) FullDebug() string {
 	result := ""
 	for q, rDict := range bot.ds {
@@ -127,11 +140,12 @@ func (bot *Bot) FullDebug() string {
 	return result
 }
 
-
+// LenQueries get the total number of learned queries by the ChatBot
 func (bot *Bot) LenQueries() int {
 	return len(bot.ds)
 }
 
+// LenResponses get the total number of learned responses for a query by the ChatBot
 func (bot *Bot) LenResponses(q string) (int, error) {
 	respDict, ok := bot.ds[query(q)]
 	if !ok {
@@ -140,6 +154,7 @@ func (bot *Bot) LenResponses(q string) (int, error) {
 	return len(respDict), nil
 }
 
+// ShowQueries shows all of the learned queries by the ChatBot
 func (bot *Bot) ShowQueries() []string {
 	queries := make([]string, 0, len(bot.ds))
 	for k := range bot.ds {
@@ -148,6 +163,7 @@ func (bot *Bot) ShowQueries() []string {
 	return queries
 }
 
+// ShowResponses shows all of the learned responses by the ChatBot
 func (bot *Bot) ShowResponses(q string) ([]string, error) {
 	respDict, ok := bot.ds[query(q)]
 	if !ok {
@@ -160,6 +176,7 @@ func (bot *Bot) ShowResponses(q string) ([]string, error) {
 	return responses, nil
 }
 
+// Add appends new phrase (query and response) into the ChatBot database
 func (bot *Bot) Add(q string, r string) {
 	if q == fullDebugMessage {
 		return
@@ -183,6 +200,7 @@ func (bot *Bot) Add(q string, r string) {
 	}
 }
 
+// Adds appends multiple phrases (queries, responses) into the ChatBot Database
 func (bot *Bot) Adds(qs []string, rs []string) error {
 	tuples, err := internal.Zip(qs, rs)
 	if err != nil {
@@ -194,6 +212,7 @@ func (bot *Bot) Adds(qs []string, rs []string) error {
 	return nil
 }
 
+// RemoveQuery delete a specific query from the ChatBot Database
 func (bot *Bot) RemoveQuery(q string) error {
 	_, ok := bot.ds[query(q)]
 	if !ok {
@@ -203,6 +222,7 @@ func (bot *Bot) RemoveQuery(q string) error {
 	return nil
 }
 
+// RemoveQueries delete multiple queries from the ChatBot Database
 func (bot *Bot) RemoveQueries(qs []string) error {
 	for _, q := range qs {
 		err := bot.RemoveQuery(q)
@@ -213,6 +233,7 @@ func (bot *Bot) RemoveQueries(qs []string) error {
 	return nil
 }
 
+// RemoveResponse delete a specific response for a specific query from the DataBase
 func (bot *Bot) RemoveResponse(q string, r string) error {
 	respDict, ok := bot.ds[query(q)]
 	if !ok {
@@ -226,6 +247,7 @@ func (bot *Bot) RemoveResponse(q string, r string) error {
 	return nil
 }
 
+// RemoveResponses delete responses from the respective queries from the DataBase
 func (bot *Bot) RemoveResponses(qs []string, rs []string) error {
 	tuples, err := internal.Zip(qs, rs)
 	if err != nil {
@@ -240,6 +262,7 @@ func (bot *Bot) RemoveResponses(qs []string, rs []string) error {
 	return nil
 }
 
+// Get allows the ChatBot to reply a query, according to its intrinsic strategy
 func (bot *Bot) Get(q string) (string, error) {
 	if q == debugMessage {
 		return bot.Debug(), nil
