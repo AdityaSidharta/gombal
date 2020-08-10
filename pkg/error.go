@@ -12,4 +12,5 @@ func (e *GombalErrors) Error() string {
 var invalidQueryError = &GombalErrors{message: "query does not exist in the dataset"}
 var invalidResponseError = &GombalErrors{message: "response does not exist in the dataset"}
 var emptyResponseError = &GombalErrors{message: "zero response for the specific query in the dataset"}
-var invalidStrategyError = &GombalErrors{message: "invalid strategy"}
+var invalidStrategyError = &GombalErrors{message: "invalid Strategy"}
+var emptyMessagingError = &GombalErrors{message: "messaging does not contain any message types"}

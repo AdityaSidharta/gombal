@@ -1,19 +1,19 @@
 package pkg
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/mroth/weightedrand"
+	"io/ioutil"
 	"math/rand"
 	"time"
+	log "github.com/sirupsen/logrus"
 )
 
 // Bot Constants
 const (
 	debugMessage = "Papa tell me your secret"
 	fullDebugMessage = "Mama tell me your secret"
-	RANDOM = 0
-	WEIGHTED = 1
-	MAXIMUM = 2
 )
 
 // query is the data structure for the Chat query
@@ -28,21 +28,32 @@ type dataset map[query]response
 // Bot is the data structure of the ChatBot.
 type Bot struct {
 	ds       dataset
-	strategy int
+	strategy string
 }
 
-// NewBot creates New Bot with empty learned phrases and chosen strategy
-func NewBot (strategy int) *Bot {
+// NewBot creates New Bot with empty learned phrases and chosen Strategy
+func NewBot (strategy string, path string) (*Bot, error) {
 	initQuery := "Hi There!"
 	initResponse := make(map[string]int)
 	initDataset := make(map[query]response)
-
 	initResponse["Hello! How are you?"] = 1
 	initDataset[query(initQuery)] = initResponse
 
-	return &Bot {
+	bot := &Bot {
 		ds:       initDataset,
 		strategy: strategy,
+	}
+
+	ok := bot.ValidStrategy()
+	if !ok {
+		return bot, invalidStrategyError
+	}
+
+	if path == "" {
+		return bot, nil
+	} else {
+		err := bot.Load(path)
+		return bot, err
 	}
 }
 
@@ -261,7 +272,7 @@ func (bot *Bot) RemoveResponses(qs []string, rs []string) error {
 	return nil
 }
 
-// Get allows the ChatBot to reply a query, according to its intrinsic strategy
+// Get allows the ChatBot to reply a query, according to its intrinsic Strategy
 func (bot *Bot) Get(q string) (string, error) {
 	if q == debugMessage {
 		return bot.Debug(), nil
@@ -279,11 +290,11 @@ func (bot *Bot) Get(q string) (string, error) {
 			return "", emptyResponseError
 		}
 		switch strategy := bot.strategy; strategy {
-		case RANDOM:
+		case "RANDOM":
 			return bot.getRandom(response)
-		case WEIGHTED:
+		case "WEIGHTED":
 			return bot.getWeighted(response)
-		case MAXIMUM:
+		case "MAXIMUM":
 			return bot.getMaximum(response)
 		default:
 			return "", invalidStrategyError
@@ -291,4 +302,43 @@ func (bot *Bot) Get(q string) (string, error) {
 	} else {
 		return q, nil
 	}
+}
+
+func (bot *Bot) Save(path string) error {
+	message, err := json.MarshalIndent(bot.ds, "", " ")
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(path, message, 0644)
+	log.Info(fmt.Sprintf("Saving file to %v is successful", path))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (bot *Bot) Load(path string) error {
+	file, err := ioutil.ReadFile(path)
+	log.Info(fmt.Sprintf("Loading file from %v is successful", path))
+
+	if err != nil {
+		return err
+	}
+
+	loadedDs := dataset{}
+
+	err = json.Unmarshal([]byte(file), &loadedDs)
+	if err != nil {
+		return err
+	}
+
+	bot.ds = loadedDs
+	return nil
+}
+
+func (bot *Bot) ValidStrategy() bool {
+	_, ok := Find(supportedStrategy, bot.strategy)
+	return ok
 }
