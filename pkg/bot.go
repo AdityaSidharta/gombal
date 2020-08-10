@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"time"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 // Bot Constants
@@ -25,10 +25,12 @@ type response map[string]int
 // dataset is the data structure that unifies the learned queries and responses
 type dataset map[query]response
 
+
 // Bot is the data structure of the ChatBot.
 type Bot struct {
 	ds       dataset
 	strategy string
+	lastMessage map[string]string
 }
 
 // NewBot creates New Bot with empty learned phrases and chosen Strategy
@@ -42,6 +44,7 @@ func NewBot (strategy string, path string) (*Bot, error) {
 	bot := &Bot {
 		ds:       initDataset,
 		strategy: strategy,
+		lastMessage: make(map[string]string),
 	}
 
 	ok := bot.ValidStrategy()
@@ -195,6 +198,8 @@ func (bot *Bot) Add(q string, r string) {
 		return
 	}
 
+	logrus.Info(fmt.Sprintf("Adding q : %v, r : %v into the dictionary", q, r))
+
 	respDict, ok := bot.ds[query(q)]
 	if !ok {
 		newRespDict := make(response)
@@ -304,6 +309,16 @@ func (bot *Bot) Get(q string) (string, error) {
 	}
 }
 
+func (bot *Bot) PeriodicSave(path string) {
+	for ;; {
+		time.Sleep(time.Minute)
+		err := bot.Save(path)
+		if err != nil {
+			logrus.Fatal(err)
+		}
+	}
+}
+
 func (bot *Bot) Save(path string) error {
 	message, err := json.MarshalIndent(bot.ds, "", " ")
 	if err != nil {
@@ -311,7 +326,7 @@ func (bot *Bot) Save(path string) error {
 	}
 
 	err = ioutil.WriteFile(path, message, 0644)
-	log.Info(fmt.Sprintf("Saving file to %v is successful", path))
+	logrus.Info(fmt.Sprintf("Saving file to %v is successful", path))
 	if err != nil {
 		return err
 	}
@@ -321,7 +336,7 @@ func (bot *Bot) Save(path string) error {
 
 func (bot *Bot) Load(path string) error {
 	file, err := ioutil.ReadFile(path)
-	log.Info(fmt.Sprintf("Loading file from %v is successful", path))
+	logrus.Info(fmt.Sprintf("Loading file from %v is successful", path))
 
 	if err != nil {
 		return err
@@ -341,4 +356,17 @@ func (bot *Bot) Load(path string) error {
 func (bot *Bot) ValidStrategy() bool {
 	_, ok := Find(supportedStrategy, bot.strategy)
 	return ok
+}
+
+func (bot *Bot) UpdateLastMessage(id string, message string) {
+	bot.lastMessage[id] = message
+}
+
+func (bot *Bot) GetLastMessage(id string) (string, error) {
+	 value, ok := bot.lastMessage[id]
+	 if !ok {
+		return "", notFoundIDError
+	}
+	logrus.Info(fmt.Sprintf("Last Reply for ID %v : %v", id, value))
+	return value, nil
 }

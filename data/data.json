@@ -1,9 +1,48 @@
 {
+ "Apa Kabar Bro": {
+  "Baik baik aja dong": 1
+ },
+ "Baik baik aja dong": {
+  "Apa Kabar Bro": 1,
+  "Mantap lahh": 1
+ },
+ "Bosen banget si gw hari ini": {
+  "Sama bro": 1
+ },
+ "Gw cuman maen doang sii": {
+  "Gw cuman maen doang sii hahah": 1
+ },
+ "Gw cuman maen doang sii hahah": {
+  "Gw cuman maen doang sii hahaha": 1
+ },
+ "Gw cuman maen doang sii hahaha": {
+  "Lu ngapain aja hari ini?": 1,
+  "Ohhh pantes": 1
+ },
  "Heya!": {
   "Hello World": 2,
   "Simsalabim": 1
  },
+ "Hi": {
+  "Apa Kabar Bro": 1
+ },
  "Hi There!": {
   "Hello! How are you?": 1
+ },
+ "LOL": {
+  "Bosen banget si gw hari ini": 1
+ },
+ "Lu ngapain aja hari ini?": {
+  "Gw cuman maen doang sii hahaha": 1,
+  "Makan, tidur": 1
+ },
+ "Makan, tidur": {
+  "LOL": 1
+ },
+ "Mantap lahh": {
+  "Lu ngapain aja hari ini?": 1
+ },
+ "Ohhh pantes": {
+  "Gw cuman maen doang sii": 1
  }
 }
