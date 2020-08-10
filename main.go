@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/adityasidharta/gombal/pkg"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -9,6 +10,11 @@ import (
 )
 
 func main() {
+	env, err := pkg.LoadEnv()
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	c, err := pkg.LoadConfig(pkg.ConfigPath)
 	if err != nil {
 		logrus.Fatal(err)
@@ -25,7 +31,7 @@ func main() {
 	r.HandleFunc("/", bot.TestHandler).Methods("GET")
 	r.HandleFunc("/webhook", bot.VerificationHandler).Methods("GET")
 	r.HandleFunc("/webhook", bot.CallbackHandler).Methods("POST")
-	if err := http.ListenAndServe("0.0.0.0:8080", r); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%v", env.Port), r); err != nil {
 		log.Fatal(err)
 	}
 }

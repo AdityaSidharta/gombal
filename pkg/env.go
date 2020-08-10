@@ -5,6 +5,7 @@ import "github.com/kelseyhightower/envconfig"
 type Env struct {
 	VerifyToken string `required:"true"`
 	PageAccessToken string `required:"true"`
+	Port string `required:"true"`
 }
 
 
