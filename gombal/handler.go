@@ -1,17 +1,17 @@
-package pkg
+package gombal
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/adityasidharta/gombal/pkg/facebook"
+	"github.com/adityasidharta/gombal"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 )
 
-func (bot *Bot) HandleMessage(inMessage facebook.Message, id string) {
+func (bot *Bot) HandleMessage(inMessage main.main.Message, id string) {
 	env, err := LoadEnv()
 	if err != nil {
 		logrus.Fatal(err)
@@ -20,9 +20,9 @@ func (bot *Bot) HandleMessage(inMessage facebook.Message, id string) {
 	logrus.Info(fmt.Sprintf("inMessage : %+v", inMessage))
 	logrus.Info(fmt.Sprintf("id : %v", id))
 
-	var outMessage facebook.Message
+	var outMessage main.main.Message
 	if inMessage.Text == "" {
-		outMessage = facebook.Message{
+		outMessage = main.main.Message{
 			Text: "Sorry, I am not yet trained to answer those! :( Are there anything else that you want to talk about?",
 		}
 	} else {
@@ -40,7 +40,7 @@ func (bot *Bot) HandleMessage(inMessage facebook.Message, id string) {
 		if err != nil {
 			logrus.Fatal(err)
 		}
-		outMessage = facebook.Message{
+		outMessage = main.main.Message{
 			Text: resp,
 		}
 		if err != nil {
@@ -52,8 +52,8 @@ func (bot *Bot) HandleMessage(inMessage facebook.Message, id string) {
 
 	logrus.Info(fmt.Sprintf("outMessage : %+v", outMessage))
 
-	outResponse := facebook.Response{
-		Recipient: facebook.User{ID: id},
+	outResponse := main.main.Response{
+		Recipient: main.main.User{ID: id},
 		Message:   outMessage,
 	}
 
@@ -130,7 +130,7 @@ func (bot *Bot) TestHandler(w http.ResponseWriter, r *http.Request) {
 
 func (bot *Bot) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	logrus.Info("CallbackHandler is called")
-	var callback facebook.Callback
+	var callback main.main.Callback
 	err := json.NewDecoder(r.Body).Decode(&callback)
 	if err != nil {
 		logrus.Fatal(err)
@@ -139,7 +139,7 @@ func (bot *Bot) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	if callback.Object == "page" {
 		for _, entry := range callback.Entries {
 			for _, messaging := range entry.Messagings {
-				if messaging.Message != (facebook.Message{}) {
+				if messaging.Message != (main.main.Message{}) {
 					bot.HandleMessage(messaging.Message, messaging.Sender.ID)
 				} else {
 					logrus.Fatal(emptyMessagingError)

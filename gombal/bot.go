@@ -1,18 +1,18 @@
-package pkg
+package gombal
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/mroth/weightedrand"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"math/rand"
 	"time"
-	"github.com/sirupsen/logrus"
 )
 
 // Bot Constants
 const (
-	debugMessage = "Papa tell me your secret"
+	debugMessage     = "Papa tell me your secret"
 	fullDebugMessage = "Mama tell me your secret"
 )
 
@@ -25,25 +25,24 @@ type response map[string]int
 // dataset is the data structure that unifies the learned queries and responses
 type dataset map[query]response
 
-
 // Bot is the data structure of the ChatBot.
 type Bot struct {
-	ds       dataset
-	strategy string
+	ds          dataset
+	strategy    string
 	lastMessage map[string]string
 }
 
 // NewBot creates New Bot with empty learned phrases and chosen Strategy
-func NewBot (strategy string, path string) (*Bot, error) {
+func NewBot(strategy string, path string) (*Bot, error) {
 	initQuery := "Hi There!"
 	initResponse := make(map[string]int)
 	initDataset := make(map[query]response)
 	initResponse["Hello! How are you?"] = 1
 	initDataset[query(initQuery)] = initResponse
 
-	bot := &Bot {
-		ds:       initDataset,
-		strategy: strategy,
+	bot := &Bot{
+		ds:          initDataset,
+		strategy:    strategy,
 		lastMessage: make(map[string]string),
 	}
 
@@ -93,11 +92,11 @@ func (bot *Bot) getWeighted(response map[string]int) (string, error) {
 	}
 
 	c := weightedrand.NewChooser(
-        choices...
-    )
+		choices...,
+	)
 
-    result := c.Pick().(string)
-    return result, nil
+	result := c.Pick().(string)
+	return result, nil
 }
 
 // getRandom chooses one response randomly, given multiple responses
@@ -115,13 +114,12 @@ func (bot *Bot) getRandom(response map[string]int) (string, error) {
 	}
 
 	c := weightedrand.NewChooser(
-        choices...
-    )
+		choices...,
+	)
 
-    result := c.Pick().(string)
-    return result, nil
+	result := c.Pick().(string)
+	return result, nil
 }
-
 
 // contains check whether the query exists within the dataset
 func (bot *Bot) contains(q string) bool {
@@ -310,7 +308,7 @@ func (bot *Bot) Get(q string) (string, error) {
 }
 
 func (bot *Bot) PeriodicSave(path string) {
-	for ;; {
+	for {
 		time.Sleep(time.Minute)
 		err := bot.Save(path)
 		if err != nil {
@@ -363,8 +361,8 @@ func (bot *Bot) UpdateLastMessage(id string, message string) {
 }
 
 func (bot *Bot) GetLastMessage(id string) (string, error) {
-	 value, ok := bot.lastMessage[id]
-	 if !ok {
+	value, ok := bot.lastMessage[id]
+	if !ok {
 		return "", notFoundIDError
 	}
 	logrus.Info(fmt.Sprintf("Last Reply for ID %v : %v", id, value))

@@ -1,4 +1,4 @@
-package pkg
+package gombal
 
 type GombalErrors struct {
 	message string
@@ -14,4 +14,4 @@ var invalidResponseError = &GombalErrors{message: "response does not exist in th
 var emptyResponseError = &GombalErrors{message: "zero response for the specific query in the dataset"}
 var invalidStrategyError = &GombalErrors{message: "invalid Strategy"}
 var emptyMessagingError = &GombalErrors{message: "messaging does not contain any message types"}
-var	notFoundIDError = &GombalErrors{message: "id not found in lastMessage"}
+var notFoundIDError = &GombalErrors{message: "id not found in lastMessage"}

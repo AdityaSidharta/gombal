@@ -1,6 +1,6 @@
-package pkg
+package gombal
 
-func Find(values []string, val string) (int, bool){
+func Find(values []string, val string) (int, bool) {
 	for i, value := range values {
 		if value == val {
 			return i, true

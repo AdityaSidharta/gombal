@@ -1,13 +1,12 @@
-package pkg
+package gombal
 
 import "github.com/kelseyhightower/envconfig"
 
 type Env struct {
-	VerifyToken string `required:"true"`
+	VerifyToken     string `required:"true"`
 	PageAccessToken string `required:"true"`
-	Port string `required:"true"`
+	Port            string `required:"true"`
 }
-
 
 func LoadEnv() (Env, error) {
 	e := Env{}

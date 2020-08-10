@@ -1,4 +1,4 @@
-package facebook
+package gombal
 
 type Messaging struct {
 	Sender    UserWithRef `json:"sender,omitempty"`

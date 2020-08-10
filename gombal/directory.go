@@ -1,4 +1,4 @@
-package pkg
+package gombal
 
 import (
 	"github.com/sirupsen/logrus"
@@ -6,7 +6,7 @@ import (
 	"path"
 )
 
-func getWorkingDir() string{
+func getWorkingDir() string {
 	workingDir, err := os.Getwd()
 	if err != nil {
 		logrus.Fatal(err)
@@ -23,9 +23,7 @@ var scriptsDir = path.Join(workingDir, "scripts")
 var DataPath = path.Join(dataDir, "data.json")
 var ConfigPath = path.Join(configDir, "config.yaml")
 
-
 var _ = assetDir
 var _ = configDir
 var _ = dataDir
 var _ = scriptsDir
-

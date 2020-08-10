@@ -1,4 +1,4 @@
-package pkg
+package gombal
 
 import (
 	"fmt"
@@ -31,7 +31,6 @@ func LoadConfig(path string) (Config, error) {
 	if !ok {
 		return c, invalidStrategyError
 	}
-
 
 	return c, nil
 }
