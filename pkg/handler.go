@@ -1,17 +1,16 @@
-package gombal
+package pkg
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/adityasidharta/gombal"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 )
 
-func (bot *Bot) HandleMessage(inMessage main.main.Message, id string) {
+func (bot *Bot) HandleMessage(inMessage Message, id string) {
 	env, err := LoadEnv()
 	if err != nil {
 		logrus.Fatal(err)
@@ -20,9 +19,9 @@ func (bot *Bot) HandleMessage(inMessage main.main.Message, id string) {
 	logrus.Info(fmt.Sprintf("inMessage : %+v", inMessage))
 	logrus.Info(fmt.Sprintf("id : %v", id))
 
-	var outMessage main.main.Message
+	var outMessage Message
 	if inMessage.Text == "" {
-		outMessage = main.main.Message{
+		outMessage = Message{
 			Text: "Sorry, I am not yet trained to answer those! :( Are there anything else that you want to talk about?",
 		}
 	} else {
@@ -40,7 +39,7 @@ func (bot *Bot) HandleMessage(inMessage main.main.Message, id string) {
 		if err != nil {
 			logrus.Fatal(err)
 		}
-		outMessage = main.main.Message{
+		outMessage = Message{
 			Text: resp,
 		}
 		if err != nil {
@@ -52,8 +51,8 @@ func (bot *Bot) HandleMessage(inMessage main.main.Message, id string) {
 
 	logrus.Info(fmt.Sprintf("outMessage : %+v", outMessage))
 
-	outResponse := main.main.Response{
-		Recipient: main.main.User{ID: id},
+	outResponse := Response{
+		Recipient: User{ID: id},
 		Message:   outMessage,
 	}
 
@@ -130,7 +129,7 @@ func (bot *Bot) TestHandler(w http.ResponseWriter, r *http.Request) {
 
 func (bot *Bot) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	logrus.Info("CallbackHandler is called")
-	var callback main.main.Callback
+	var callback Callback
 	err := json.NewDecoder(r.Body).Decode(&callback)
 	if err != nil {
 		logrus.Fatal(err)
@@ -139,7 +138,7 @@ func (bot *Bot) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	if callback.Object == "page" {
 		for _, entry := range callback.Entries {
 			for _, messaging := range entry.Messagings {
-				if messaging.Message != (main.main.Message{}) {
+				if messaging.Message != (Message{}) {
 					bot.HandleMessage(messaging.Message, messaging.Sender.ID)
 				} else {
 					logrus.Fatal(emptyMessagingError)

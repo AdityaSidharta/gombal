@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/adityasidharta/gombal/gombal"
+	"github.com/adityasidharta/gombal/pkg"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"log"
@@ -10,22 +10,22 @@ import (
 )
 
 func main() {
-	env, err := gombal.LoadEnv()
+	env, err := pkg.LoadEnv()
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	c, err := gombal.LoadConfig(gombal.ConfigPath)
+	c, err := pkg.LoadConfig(pkg.ConfigPath)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	bot, err := gombal.NewBot(c.Strategy, gombal.DataPath)
+	bot, err := pkg.NewBot(c.Strategy, pkg.DataPath)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	go bot.PeriodicSave(gombal.DataPath)
+	go bot.PeriodicSave(pkg.DataPath)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", bot.TestHandler).Methods("GET")

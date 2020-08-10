@@ -1,4 +1,4 @@
-package gombal
+package pkg
 
 import (
 	"encoding/json"
@@ -342,7 +342,7 @@ func (bot *Bot) Load(path string) error {
 
 	loadedDs := dataset{}
 
-	err = json.Unmarshal([]byte(file), &loadedDs)
+	err = json.Unmarshal(file, &loadedDs)
 	if err != nil {
 		return err
 	}

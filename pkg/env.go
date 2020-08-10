@@ -1,4 +1,4 @@
-package gombal
+package pkg
 
 import "github.com/kelseyhightower/envconfig"
 

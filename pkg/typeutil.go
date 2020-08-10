@@ -1,4 +1,4 @@
-package gombal
+package pkg
 
 func Find(values []string, val string) (int, bool) {
 	for i, value := range values {

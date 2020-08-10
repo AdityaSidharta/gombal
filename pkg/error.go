@@ -1,4 +1,4 @@
-package gombal
+package pkg
 
 type GombalErrors struct {
 	message string

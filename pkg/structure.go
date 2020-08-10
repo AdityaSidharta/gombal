@@ -1,4 +1,4 @@
-package gombal
+package pkg
 
 type Messaging struct {
 	Sender    UserWithRef `json:"sender,omitempty"`
